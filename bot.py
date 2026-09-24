@@ -1,26 +1,10 @@
-import os
 import asyncio
 import requests
-from http.server import HTTPServer, BaseHTTPRequestHandler
-from threading import Thread
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Updated Revoked Bot Token & Chat ID
 TOKEN = "8987965329:AAFQVt4M5_wt7ofyB80QfbAza5PK1XFsr0g"
 MY_CHAT_ID = "5490622725"
-
-# Dummy HTTP Server for Render Port Binding
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(b"Bot is alive!")
-
-def run_http_server():
-    port = int(os.environ.get("PORT", 8080))
-    server = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)
-    server.serve_forever()
 
 seen_tokens = set()
 
@@ -99,8 +83,6 @@ async def post_init(app: Application):
     asyncio.create_task(check_new_arc_tokens(app))
 
 def main():
-    Thread(target=run_http_server, daemon=True).start()
-    
     app = Application.builder().token(TOKEN).post_init(post_init).build()
     app.add_handler(CommandHandler("start", start))
     
