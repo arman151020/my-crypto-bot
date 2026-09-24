@@ -23,7 +23,7 @@ def run_http_server():
 
 seen_tokens = set()
 
-# ARC Chain Alert Function
+# Background task to scan ARC tokens
 async def check_new_arc_tokens(app: Application):
     while True:
         try:
@@ -59,24 +59,27 @@ async def check_new_arc_tokens(app: Application):
         except Exception as e:
             print(f"Error checking ARC tokens: {e}")
             
-        # Check every 60 seconds
         await asyncio.sleep(60)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("ARC Chain Price & Alert Bot is Active!")
 
-async def post_init(app: Application):
-    # Start background task when bot initializes
-    asyncio.create_task(check_new_arc_tokens(app))
-
-def main():
+async def main():
     Thread(target=run_http_server, daemon=True).start()
     
-    app = Application.builder().token(TOKEN).post_init(post_init).build()
+    app = Application.builder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     
-    print("Bot is starting...")
-    app.run_polling()
+    async with app:
+        await app.start()
+        await app.updater.start_polling()
+        print("Bot is up and running...")
+        
+        # Start background tracker
+        asyncio.create_task(check_new_arc_tokens(app))
+        
+        # Keep running
+        await asyncio.Event().wait()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
