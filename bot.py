@@ -1,10 +1,24 @@
+import os
 import asyncio
 import requests
+from threading import Thread
+from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8987965329:AAFQVt4M5_wt7ofyB80QfbAza5PK1XFsr0g"
 MY_CHAT_ID = "5490622725"
+
+# Dummy Web Server to satisfy Render Web Service Port Binding
+web_app = Flask('')
+
+@web_app.route('/')
+def home():
+    return "Bot is running 24/7!"
+
+def run_web_server():
+    port = int(os.environ.get("PORT", 8080))
+    web_app.run(host='0.0.0.0', port=port)
 
 seen_tokens = set()
 
@@ -83,6 +97,9 @@ async def post_init(app: Application):
     asyncio.create_task(check_new_arc_tokens(app))
 
 def main():
+    # Start Web Server in background thread
+    Thread(target=run_web_server, daemon=True).start()
+    
     app = Application.builder().token(TOKEN).post_init(post_init).build()
     app.add_handler(CommandHandler("start", start))
     
