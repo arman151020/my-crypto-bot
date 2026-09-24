@@ -1,6 +1,0 @@
-services:
-  - type: worker
-    name: my-crypto-bot-1
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python bot.py"
