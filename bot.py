@@ -6,7 +6,7 @@ from threading import Thread
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Telegram Bot Token & Chat ID
+# Updated Telegram Bot Token & Chat ID
 TOKEN = "8987965329:AAHmAtlhKTjQt58rVy6pHD4YQSy2bSOnFhg"
 MY_CHAT_ID = "5490622725"
 
