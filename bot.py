@@ -6,11 +6,9 @@ from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-# Revoked & Updated Token
 TOKEN = "8987965329:AAGHuyL6mo4N0JBRHjowZ_1hPKC-bo153JM"
 MY_CHAT_ID = "5490622725"
 
-# Dummy Web Server to satisfy Render Web Service Port Binding
 web_app = Flask('')
 
 @web_app.route('/')
@@ -23,12 +21,21 @@ def run_web_server():
 
 seen_tokens = set()
 
-# Scanner for DexScreener & BasedBot
 async def check_new_arc_tokens(app: Application):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
     }
     
+    # 🔔 Instant Startup Test Message
+    try:
+        await app.bot.send_message(
+            chat_id=MY_CHAT_ID, 
+            text="✅ **ARC Alert Bot System Initialized!**\nScanning DexScreener & BasedBot every 60s...",
+            parse_mode="Markdown"
+        )
+    except Exception as e:
+        print(f"Startup message error: {e}")
+
     while True:
         # 1. Check DexScreener
         try:
@@ -98,7 +105,6 @@ async def post_init(app: Application):
     asyncio.create_task(check_new_arc_tokens(app))
 
 def main():
-    # Start Web Server in background thread
     Thread(target=run_web_server, daemon=True).start()
     
     app = Application.builder().token(TOKEN).post_init(post_init).build()
