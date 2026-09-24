@@ -1,14 +1,29 @@
+import os
 import asyncio
 import requests
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from threading import Thread
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 TOKEN = "8987965329:AAHmAtlhKTjQt58rVy6pHD4YQSy2bSOnFhg"
 MY_CHAT_ID = "5490622725"
 
+# Dummy HTTP Server for Render Port Binding
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive!")
+
+def run_http_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(("0.0.0.0", port), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
 seen_tokens = set()
 
-# DEX Screener ARC Token Scanner
+# Background task to check new ARC chain tokens
 async def check_new_arc_tokens(app: Application):
     while True:
         try:
@@ -48,16 +63,18 @@ async def check_new_arc_tokens(app: Application):
         await asyncio.sleep(60)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("ARC Chain Alert Bot is Online & Active!")
+    await update.message.reply_text("ARC Chain Alert Bot is Active!")
 
 async def post_init(app: Application):
     asyncio.create_task(check_new_arc_tokens(app))
 
 def main():
+    Thread(target=run_http_server, daemon=True).start()
+    
     app = Application.builder().token(TOKEN).post_init(post_init).build()
     app.add_handler(CommandHandler("start", start))
     
-    print("Bot is starting polling...")
+    print("Bot is starting...")
     app.run_polling(drop_pending_updates=True)
 
 if __name__ == "__main__":
