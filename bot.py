@@ -6,7 +6,8 @@ from threading import Thread
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "8987965329:AAEYWA9B3pC58-nqgug1gbVZgPZf1eLWBzA"
+# Updated Revoked Bot Token & Chat ID
+TOKEN = "8987965329:AAFQVt4M5_wt7ofyB80QfbAza5PK1XFsr0g"
 MY_CHAT_ID = "5490622725"
 
 # Dummy HTTP Server for Render Port Binding
@@ -30,7 +31,7 @@ async def check_new_arc_tokens(app: Application):
     }
     
     while True:
-        # 1. Fetching from DexScreener
+        # 1. Check DexScreener
         try:
             url_dex = "https://api.dexscreener.com/latest/dex/search?q=arc"
             res_dex = requests.get(url_dex, timeout=10, headers=headers).json()
@@ -61,7 +62,7 @@ async def check_new_arc_tokens(app: Application):
         except Exception as e:
             print(f"Error checking DexScreener: {e}")
 
-        # 2. Fetching from BasedBot / External ARC sources
+        # 2. Check BasedBot
         try:
             url_based = "https://api.basedbot.app/v1/tokens?chain=arc" 
             res_based = requests.get(url_based, timeout=10, headers=headers)
@@ -104,7 +105,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     
     print("Bot is starting polling...")
-    app.run_polling(drop_pending_updates=True)
+    app.run_polling(drop_pending_updates=True, close_loop=False)
 
 if __name__ == "__main__":
     main()
