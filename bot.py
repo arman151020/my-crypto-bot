@@ -1,13 +1,20 @@
 import os
 import asyncio
 import requests
+import logging
 from threading import Thread
 from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "8987965329:AAGHuyL6mo4N0JBRHjowZ_1hPKC-bo153JM"
+# Updated Token
+TOKEN = "8987965329:AAEf14RbDMD79NSpt3z-hO_bUFr7dJBRdP0"
 MY_CHAT_ID = "5490622725"
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
 web_app = Flask('')
 
@@ -21,16 +28,18 @@ def run_web_server():
 
 seen_tokens = set()
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    logger.error("Exception while handling an update:", exc_info=context.error)
+
 async def check_new_arc_tokens(app: Application):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
     }
     
-    # 🔔 Instant Startup Test Message
     try:
         await app.bot.send_message(
             chat_id=MY_CHAT_ID, 
-            text="✅ **ARC Alert Bot System Initialized!**\nScanning DexScreener & BasedBot every 60s...",
+            text="✅ **ARC Alert Bot System Re-initialized!**\nScanning DexScreener & BasedBot...",
             parse_mode="Markdown"
         )
     except Exception as e:
@@ -109,6 +118,7 @@ def main():
     
     app = Application.builder().token(TOKEN).post_init(post_init).build()
     app.add_handler(CommandHandler("start", start))
+    app.add_error_handler(error_handler)
     
     print("Bot is starting polling...")
     app.run_polling(drop_pending_updates=True, close_loop=False)
