@@ -6,7 +6,8 @@ from threading import Thread
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "8987965329:AAHmAtlhKTjQt58rVy6pHD4YQSy2bSOnFhg"
+# Updated Bot Token & Chat ID
+TOKEN = "8987965329:AAEYWA9B3pC58-nqgug1gbVZgPZf1eLWBzA"
 MY_CHAT_ID = "5490622725"
 
 # Dummy HTTP Server for Render Port Binding
@@ -23,7 +24,7 @@ def run_http_server():
 
 seen_tokens = set()
 
-# Background task to check new ARC chain tokens
+# Background task to scan ARC chain tokens on DexScreener
 async def check_new_arc_tokens(app: Application):
     while True:
         try:
