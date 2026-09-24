@@ -6,7 +6,8 @@ from flask import Flask
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-TOKEN = "8987965329:AAFQVt4M5_wt7ofyB80QfbAza5PK1XFsr0g"
+# Revoked & Updated Token
+TOKEN = "8987965329:AAGHuyL6mo4N0JBRHjowZ_1hPKC-bo153JM"
 MY_CHAT_ID = "5490622725"
 
 # Dummy Web Server to satisfy Render Web Service Port Binding
